@@ -3,10 +3,9 @@
 import uuid
 
 from sqlalchemy import Column, ForeignKey, String, Table
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.models.base import Base
+from src.models.base import Base, UUIDType
 
 # Junction table for many-to-many leads <-> tags
 lead_tags = Table(
@@ -14,13 +13,13 @@ lead_tags = Table(
     Base.metadata,
     Column(
         "lead_id",
-        UUID(as_uuid=True),
+        UUIDType(),
         ForeignKey("leads.id", ondelete="CASCADE"),
         primary_key=True,
     ),
     Column(
         "tag_id",
-        UUID(as_uuid=True),
+        UUIDType(),
         ForeignKey("tags.id", ondelete="CASCADE"),
         primary_key=True,
     ),

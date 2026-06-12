@@ -4,10 +4,9 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import DateTime, ForeignKey, Index, Numeric, SmallInteger, String, Text
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.models.base import Base
+from src.models.base import Base, UUIDType
 from src.models.tag import lead_tags
 
 
@@ -15,10 +14,10 @@ class Lead(Base):
     __tablename__ = "leads"
 
     company_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("companies.id", ondelete="SET NULL")
+        UUIDType(), ForeignKey("companies.id", ondelete="SET NULL")
     )
     primary_contact_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("contacts.id", ondelete="SET NULL")
+        UUIDType(), ForeignKey("contacts.id", ondelete="SET NULL")
     )
     title: Mapped[str] = mapped_column(String(300), nullable=False)
     status: Mapped[str] = mapped_column(

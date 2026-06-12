@@ -3,21 +3,20 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Index, String, Text
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy import JSON, DateTime, ForeignKey, Index, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.models.base import Base
+from src.models.base import Base, UUIDType
 
 
 class Interaction(Base):
     __tablename__ = "interactions"
 
     lead_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("leads.id", ondelete="CASCADE"), nullable=False
+        UUIDType(), ForeignKey("leads.id", ondelete="CASCADE"), nullable=False
     )
     contact_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("contacts.id", ondelete="SET NULL")
+        UUIDType(), ForeignKey("contacts.id", ondelete="SET NULL")
     )
     type: Mapped[str] = mapped_column(
         String(30), nullable=False
@@ -32,7 +31,7 @@ class Interaction(Base):
     external_id: Mapped[str | None] = mapped_column(
         String(255)
     )  # for deduplication (Gmail/LinkedIn message ID)
-    metadata_: Mapped[dict | None] = mapped_column("metadata", JSONB)
+    metadata_: Mapped[dict | None] = mapped_column("metadata", JSON)
 
     # Relationships
     lead: Mapped["Lead"] = relationship(back_populates="interactions")  # noqa: F821

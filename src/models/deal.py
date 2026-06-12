@@ -4,17 +4,16 @@ import uuid
 from datetime import date
 
 from sqlalchemy import Date, ForeignKey, Numeric, String, Text
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.models.base import Base
+from src.models.base import Base, UUIDType
 
 
 class Deal(Base):
     __tablename__ = "deals"
 
     lead_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
+        UUIDType(),
         ForeignKey("leads.id", ondelete="CASCADE"),
         nullable=False,
         unique=True,

@@ -3,17 +3,16 @@
 import uuid
 
 from sqlalchemy import Boolean, ForeignKey, Index, String, Text
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.models.base import Base
+from src.models.base import Base, UUIDType
 
 
 class Contact(Base):
     __tablename__ = "contacts"
 
     company_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("companies.id", ondelete="SET NULL")
+        UUIDType(), ForeignKey("companies.id", ondelete="SET NULL")
     )
     first_name: Mapped[str] = mapped_column(String(100), nullable=False)
     last_name: Mapped[str] = mapped_column(String(100), nullable=False)

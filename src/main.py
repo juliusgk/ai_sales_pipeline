@@ -17,10 +17,15 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     from src.database import engine
 
     async with engine.begin() as conn:
-        # Enable pgvector extension
-        await conn.execute(
-            __import__("sqlalchemy").text("CREATE EXTENSION IF NOT EXISTS vector")
-        )
+        # Enable pgvector extension (PostgreSQL only)
+        if "postgresql" in settings.database_url:
+            await conn.execute(
+                __import__("sqlalchemy").text("CREATE EXTENSION IF NOT EXISTS vector")
+            )
+        elif "sqlite" in settings.database_url:
+            # For SQLite testing: create all tables directly
+            from src.models import Base
+            await conn.run_sync(Base.metadata.create_all)
     yield
     # Shutdown: dispose engine
     await engine.dispose()
@@ -48,13 +53,15 @@ app.add_middleware(
 
 @app.middleware("http")
 async def api_key_auth(request: Request, call_next):
-    """Simple API key authentication middleware."""
+    """API key authentication middleware with timing-safe comparison."""
+    import hmac
+
     # Skip auth for health check and docs
     if request.url.path in ("/health", "/docs", "/openapi.json", "/redoc"):
         return await call_next(request)
 
     api_key = request.headers.get("Authorization", "").replace("Bearer ", "")
-    if api_key != settings.api_key:
+    if not hmac.compare_digest(api_key, settings.api_key):
         return JSONResponse(status_code=401, content={"detail": "Invalid API key"})
 
     return await call_next(request)

@@ -28,3 +28,9 @@ Thumbs.db
 *.csv
 *.xlsx
 !examples/*.csv
+
+# SQLite test databases
+*.db
+
+# Gmail tokens
+data/gmail_token.json
